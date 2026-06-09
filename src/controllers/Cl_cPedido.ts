@@ -20,6 +20,24 @@ export default class Cl_cPedido {
         this.vista.onEliminarProducto((codigo: number) => this.onEliminarProducto(codigo));
         this.vista.onGuardar(() => this.onGuardar());
         this.cargarProductos();
+        this.vista.onProductoSeleccionado((codigo: number) => this.actualizarPorcentajeProducto(codigo));
+    }
+
+    private async actualizarPorcentajeProducto(codigo: number): Promise<void> {
+        try {
+            const res = await Cl_sPedido.obtenerPorcentajesProductos();
+            if (!res.ok) {
+                this.vista.mostrarPorcentajeProducto(0);
+                return;
+            }
+            const tabla = res.tabla || [];
+            const item = tabla.find((t: any) => t.codigo === codigo);
+            const porcentaje = item ? Number(item.porcentaje) : 0;
+            this.vista.mostrarPorcentajeProducto(porcentaje);
+        } catch (e) {
+            console.error(e);
+            this.vista.mostrarPorcentajeProducto(0);
+        }
     }
 
     private async cargarProductos(): Promise<void> {
@@ -27,6 +45,9 @@ export default class Cl_cPedido {
         if (resultado.ok) {
             this.productosDisponibles = resultado.tabla.map((p: any) => new Cl_mProducto(p));
             this.vista.cargarProductosDisponibles(this.productosDisponibles);
+            // Actualizar porcentaje para el producto seleccionado inicialmente
+            const codigoInicial = this.vista.codigoProducto;
+            if (codigoInicial) this.actualizarPorcentajeProducto(codigoInicial);
         }
     }
 

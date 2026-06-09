@@ -17,12 +17,34 @@ export default class Cl_cPedido {
         this.vista.onEliminarProducto((codigo) => this.onEliminarProducto(codigo));
         this.vista.onGuardar(() => this.onGuardar());
         this.cargarProductos();
+        this.vista.onProductoSeleccionado((codigo) => this.actualizarPorcentajeProducto(codigo));
+    }
+    async actualizarPorcentajeProducto(codigo) {
+        try {
+            const res = await Cl_sPedido.obtenerPorcentajesProductos();
+            if (!res.ok) {
+                this.vista.mostrarPorcentajeProducto(0);
+                return;
+            }
+            const tabla = res.tabla || [];
+            const item = tabla.find((t) => t.codigo === codigo);
+            const porcentaje = item ? Number(item.porcentaje) : 0;
+            this.vista.mostrarPorcentajeProducto(porcentaje);
+        }
+        catch (e) {
+            console.error(e);
+            this.vista.mostrarPorcentajeProducto(0);
+        }
     }
     async cargarProductos() {
         const resultado = await Cl_sProducto.obtenerProductos();
         if (resultado.ok) {
             this.productosDisponibles = resultado.tabla.map((p) => new Cl_mProducto(p));
             this.vista.cargarProductosDisponibles(this.productosDisponibles);
+            // Actualizar porcentaje para el producto seleccionado inicialmente
+            const codigoInicial = this.vista.codigoProducto;
+            if (codigoInicial)
+                this.actualizarPorcentajeProducto(codigoInicial);
         }
     }
     onAgregarProducto() {

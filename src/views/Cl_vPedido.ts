@@ -9,6 +9,7 @@ export default class Cl_vPedido implements I_vPedido {
     private btnGuardar: HTMLButtonElement;
     private tblProductos: HTMLTableSectionElement;
     private lblTotal: HTMLElement;
+    private lblPorcentaje: HTMLElement | null;
 
     constructor() {
         this.inNombreCliente = document.getElementById("pedido_inNombreCliente") as HTMLInputElement;
@@ -19,6 +20,7 @@ export default class Cl_vPedido implements I_vPedido {
         this.btnGuardar = document.getElementById("pedido_btnGuardar") as HTMLButtonElement;
         this.tblProductos = document.getElementById("pedido_tblProductos") as HTMLTableSectionElement;
         this.lblTotal = document.getElementById("pedido_lblTotal") as HTMLElement;
+        this.lblPorcentaje = document.getElementById("pedido_lblPorcentaje") as HTMLElement | null;
     }
 
     get nombreCliente(): string { return this.inNombreCliente.value; }
@@ -80,5 +82,18 @@ export default class Cl_vPedido implements I_vPedido {
         this.inCantidad.value = "1";
         this.tblProductos.innerHTML = "";
         this.lblTotal.innerHTML = "0.00";
+    }
+
+    onProductoSeleccionado(callback: (codigo: number) => void): void {
+        this.selProducto.onchange = () => callback(this.codigoProducto);
+    }
+
+    mostrarPorcentajeProducto(percentage: number): void {
+        if (!this.lblPorcentaje) return;
+        if (!isFinite(percentage) || percentage <= 0) {
+            this.lblPorcentaje.innerText = "—";
+        } else {
+            this.lblPorcentaje.innerText = `${percentage.toFixed(2)}%`;
+        }
     }
 }

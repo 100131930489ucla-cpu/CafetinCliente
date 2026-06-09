@@ -7,6 +7,7 @@ export default class Cl_vPedido {
     btnGuardar;
     tblProductos;
     lblTotal;
+    lblPorcentaje;
     constructor() {
         this.inNombreCliente = document.getElementById("pedido_inNombreCliente");
         this.inTipoPago = document.getElementById("pedido_inTipoPago");
@@ -16,6 +17,7 @@ export default class Cl_vPedido {
         this.btnGuardar = document.getElementById("pedido_btnGuardar");
         this.tblProductos = document.getElementById("pedido_tblProductos");
         this.lblTotal = document.getElementById("pedido_lblTotal");
+        this.lblPorcentaje = document.getElementById("pedido_lblPorcentaje");
     }
     get nombreCliente() { return this.inNombreCliente.value; }
     get tipoPago() { return this.inTipoPago.value; }
@@ -70,6 +72,19 @@ export default class Cl_vPedido {
         this.inCantidad.value = "1";
         this.tblProductos.innerHTML = "";
         this.lblTotal.innerHTML = "0.00";
+    }
+    onProductoSeleccionado(callback) {
+        this.selProducto.onchange = () => callback(this.codigoProducto);
+    }
+    mostrarPorcentajeProducto(percentage) {
+        if (!this.lblPorcentaje)
+            return;
+        if (!isFinite(percentage) || percentage <= 0) {
+            this.lblPorcentaje.innerText = "—";
+        }
+        else {
+            this.lblPorcentaje.innerText = `${percentage.toFixed(2)}%`;
+        }
     }
 }
 //# sourceMappingURL=Cl_vPedido.js.map

@@ -29,5 +29,36 @@ export default class Cl_sPedido extends Cl_sMockApi {
         // 3. Eliminar el pedido
         return super.eliminarPorId({ id });
     }
+    // ✅ NUEVO MÉTODO: Obtener porcentaje de solicitudes por producto
+    static async obtenerPorcentajesProductos() {
+        const pedidosRes = await this.obtenerPedidos();
+        if (!pedidosRes.ok)
+            return { ok: false, tabla: [] };
+        const pedidos = pedidosRes.tabla || [];
+        const conteo = {};
+        let totalVeces = 0;
+        for (let i = 0; i < pedidos.length; i++) {
+            const p = pedidos[i];
+            if (!p.productos || !Array.isArray(p.productos))
+                continue;
+            for (let j = 0; j < p.productos.length; j++) {
+                const prod = p.productos[j];
+                const codigo = prod.codigo || prod.codigoProducto || 0;
+                const cantidad = Number(prod.cantidad) || 0;
+                if (!conteo[codigo])
+                    conteo[codigo] = 0;
+                conteo[codigo] += cantidad;
+                totalVeces += cantidad;
+            }
+        }
+        const tabla = [];
+        for (const key in conteo) {
+            const codigo = parseInt(key);
+            const veces = conteo[codigo] || 0;
+            const porcentaje = totalVeces > 0 ? (veces / totalVeces) * 100 : 0;
+            tabla.push({ codigo, veces, porcentaje });
+        }
+        return { ok: true, tabla };
+    }
 }
 //# sourceMappingURL=Cl_sPedido.js.map

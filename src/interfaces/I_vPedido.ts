@@ -17,4 +17,6 @@ export default interface I_vPedido {
     actualizarTotalPedido(total: number): void;
     limpiarProductoInput(): void;
     limpiar(): void;
+    onProductoSeleccionado(callback: (codigo: number) => void): void;
+    mostrarPorcentajeProducto(percentage: number): void;
 }
